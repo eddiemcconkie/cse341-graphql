@@ -16,8 +16,13 @@ const apollo_server_1 = require("apollo-server");
 const resolvers_1 = __importDefault(require("./schema/resolvers"));
 const typedefs_1 = __importDefault(require("./schema/typedefs"));
 const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, void 0, function* () {
-    const server = new apollo_server_1.ApolloServer({ typeDefs, resolvers, csrfPrevention: true });
-    const { url } = yield server.listen();
+    const server = new apollo_server_1.ApolloServer({
+        typeDefs,
+        resolvers,
+        csrfPrevention: true,
+        introspection: true,
+    });
+    const { url } = yield server.listen({ port: process.env.PORT || 4000 });
     console.log(`🚀 Server ready at ${url}`);
 });
 startApolloServer(typedefs_1.default, resolvers_1.default);
