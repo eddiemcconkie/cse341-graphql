@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_server_1 = require("apollo-server");
+const apollo_server_core_1 = require("apollo-server-core");
 const resolvers_1 = __importDefault(require("./schema/resolvers"));
 const typedefs_1 = __importDefault(require("./schema/typedefs"));
 const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, void 0, function* () {
@@ -21,6 +22,14 @@ const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, voi
         resolvers,
         csrfPrevention: true,
         introspection: true,
+        plugins: [
+            process.env.NODE_ENV === 'production'
+                ? (0, apollo_server_core_1.ApolloServerPluginLandingPageProductionDefault)({
+                    graphRef: 'CSE341@current',
+                    footer: false,
+                })
+                : (0, apollo_server_core_1.ApolloServerPluginLandingPageLocalDefault)({ footer: false }),
+        ],
     });
     const { url } = yield server.listen({ port: process.env.PORT || 4000 });
     console.log(`🚀 Server ready at ${url}`);
