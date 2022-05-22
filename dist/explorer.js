@@ -7,6 +7,7 @@ exports.document = `
       id
       title
       content
+      createdAt
     }
   }
 
@@ -15,6 +16,7 @@ exports.document = `
       id
       title
       content
+      createdAt
     }
   }
 `;

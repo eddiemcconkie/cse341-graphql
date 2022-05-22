@@ -6,6 +6,7 @@ export const document = `
       id
       title
       content
+      createdAt
     }
   }
 
@@ -14,6 +15,7 @@ export const document = `
       id
       title
       content
+      createdAt
     }
   }
 `

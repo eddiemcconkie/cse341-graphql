@@ -33,6 +33,8 @@ const typeDefs = (0, apollo_server_1.gql) `
     content: String!
     group: Group
     tags: [Tag]
+    createdAt: String!
+    lastUpdated: String!
   }
 
   type User {

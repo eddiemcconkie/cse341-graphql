@@ -8,6 +8,8 @@ export const addNote = async (_, { title, content }) => {
     content,
     group: null,
     tags: [],
+    createdAt: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
   }
   try {
     const result = await db().collection('notes').insertOne(newNote)

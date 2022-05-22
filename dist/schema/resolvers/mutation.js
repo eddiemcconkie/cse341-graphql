@@ -19,6 +19,8 @@ const addNote = (_, { title, content }) => __awaiter(void 0, void 0, void 0, fun
         content,
         group: null,
         tags: [],
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
     };
     try {
         const result = yield (0, connect_1.db)().collection('notes').insertOne(newNote);

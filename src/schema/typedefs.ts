@@ -32,6 +32,8 @@ const typeDefs = gql`
     content: String!
     group: Group
     tags: [Tag]
+    createdAt: String!
+    lastUpdated: String!
   }
 
   type User {
