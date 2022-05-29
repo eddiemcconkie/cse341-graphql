@@ -23,7 +23,7 @@ const typeDefs = gql`
     title: String!
     todos: [Todo]
     group: Group
-    tags: [Tag]
+    tags: [String]
   }
 
   type Note {
@@ -31,7 +31,7 @@ const typeDefs = gql`
     title: String!
     content: String!
     group: Group
-    tags: [Tag]
+    tags: [String]
     createdAt: String!
     lastUpdated: String!
   }
@@ -68,6 +68,12 @@ const typeDefs = gql`
 
     "Add a new to-do list to the database"
     addList(title: String!): List
+
+    "Add a tag to the specified note"
+    addTagToNote(noteId: String!, tag: String!): List
+
+    "Delete a note from the database"
+    deleteNote(noteId: String!): String
   }
 `
 

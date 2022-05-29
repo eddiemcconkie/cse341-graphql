@@ -10,6 +10,8 @@ const resolvers = {
     Mutation: {
         addNote: mutation_1.addNote,
         addList: mutation_1.addList,
+        addTagToNote: mutation_1.addTagToNote,
+        deleteNote: mutation_1.deleteNote,
     },
 };
 exports.default = resolvers;

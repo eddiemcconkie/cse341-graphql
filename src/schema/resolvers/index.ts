@@ -1,5 +1,5 @@
 import { lists, notes } from './query'
-import { addNote, addList } from './mutation'
+import { addNote, addList, addTagToNote, deleteNote } from './mutation'
 
 const resolvers = {
   Query: {
@@ -9,6 +9,8 @@ const resolvers = {
   Mutation: {
     addNote,
     addList,
+    addTagToNote,
+    deleteNote,
   },
 }
 

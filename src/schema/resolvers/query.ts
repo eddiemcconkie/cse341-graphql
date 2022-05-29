@@ -1,18 +1,21 @@
 import { ApolloError } from 'apollo-server'
 import { db } from '../../db/connect'
+import { convertId } from '../../lib/helpers'
 
 export const notes = async () => {
   try {
-    return await db().collection('notes').find().toArray()
+    let result = await db().collection('notes').find().toArray()
+    return result.map(convertId)
   } catch (error) {
-    throw ApolloError
+    throw new ApolloError('Could not retrieve notes from database')
   }
 }
 
 export const lists = async () => {
   try {
-    return await db().collection('lists').find().toArray()
+    const result = await db().collection('lists').find().toArray()
+    return result.map(convertId)
   } catch (error) {
-    throw ApolloError
+    throw new ApolloError('Could not retrieve lists from database')
   }
 }

@@ -12,21 +12,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.lists = exports.notes = void 0;
 const apollo_server_1 = require("apollo-server");
 const connect_1 = require("../../db/connect");
+const helpers_1 = require("../../lib/helpers");
 const notes = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield (0, connect_1.db)().collection('notes').find().toArray();
+        let result = yield (0, connect_1.db)().collection('notes').find().toArray();
+        return result.map(helpers_1.convertId);
     }
     catch (error) {
-        throw apollo_server_1.ApolloError;
+        throw new apollo_server_1.ApolloError('Could not retrieve notes from database');
     }
 });
 exports.notes = notes;
 const lists = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield (0, connect_1.db)().collection('lists').find().toArray();
+        const result = yield (0, connect_1.db)().collection('lists').find().toArray();
+        return result.map(helpers_1.convertId);
     }
     catch (error) {
-        throw apollo_server_1.ApolloError;
+        throw new apollo_server_1.ApolloError('Could not retrieve lists from database');
     }
 });
 exports.lists = lists;
