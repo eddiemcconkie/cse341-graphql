@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server'
+import { ApolloError } from 'apollo-server-express'
 import { ObjectId } from 'mongodb'
 import { db } from '../../db/connect'
 import { convertId } from '../../lib/helpers'

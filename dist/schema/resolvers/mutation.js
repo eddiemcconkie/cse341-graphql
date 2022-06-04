@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.addTagToNote = exports.addList = exports.addNote = void 0;
-const apollo_server_1 = require("apollo-server");
+const apollo_server_express_1 = require("apollo-server-express");
 const mongodb_1 = require("mongodb");
 const connect_1 = require("../../db/connect");
 const helpers_1 = require("../../lib/helpers");
@@ -30,7 +30,7 @@ const addNote = (_, { title, content }) => __awaiter(void 0, void 0, void 0, fun
         return newNote;
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not add note to database');
+        throw new apollo_server_express_1.ApolloError('Could not add note to database');
     }
 });
 exports.addNote = addNote;
@@ -48,7 +48,7 @@ const addList = (_, { title }) => __awaiter(void 0, void 0, void 0, function* ()
         return newList;
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not add list to database');
+        throw new apollo_server_express_1.ApolloError('Could not add list to database');
     }
 });
 exports.addList = addList;
@@ -63,7 +63,7 @@ const addTagToNote = (_, { noteId, tag }) => __awaiter(void 0, void 0, void 0, f
         return (0, helpers_1.convertId)(result.value);
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not add tag to note');
+        throw new apollo_server_express_1.ApolloError('Could not add tag to note');
     }
 });
 exports.addTagToNote = addTagToNote;
@@ -75,7 +75,7 @@ const deleteNote = (_, { noteId }) => __awaiter(void 0, void 0, void 0, function
         return result.deletedCount == 1 ? 'Note deleted' : 'Note not found';
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not delete note');
+        throw new apollo_server_express_1.ApolloError('Could not delete note');
     }
 });
 exports.deleteNote = deleteNote;

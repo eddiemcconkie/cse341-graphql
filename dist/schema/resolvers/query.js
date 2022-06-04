@@ -10,16 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lists = exports.notes = void 0;
-const apollo_server_1 = require("apollo-server");
+const apollo_server_express_1 = require("apollo-server-express");
 const connect_1 = require("../../db/connect");
 const helpers_1 = require("../../lib/helpers");
-const notes = () => __awaiter(void 0, void 0, void 0, function* () {
+const notes = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!context.user)
+        throw new apollo_server_express_1.AuthenticationError('you must be logged in');
     try {
         let result = yield (0, connect_1.db)().collection('notes').find().toArray();
         return result.map(helpers_1.convertId);
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not retrieve notes from database');
+        throw new apollo_server_express_1.ApolloError('Could not retrieve notes from database');
     }
 });
 exports.notes = notes;
@@ -29,7 +31,7 @@ const lists = () => __awaiter(void 0, void 0, void 0, function* () {
         return result.map(helpers_1.convertId);
     }
     catch (error) {
-        throw new apollo_server_1.ApolloError('Could not retrieve lists from database');
+        throw new apollo_server_express_1.ApolloError('Could not retrieve lists from database');
     }
 });
 exports.lists = lists;

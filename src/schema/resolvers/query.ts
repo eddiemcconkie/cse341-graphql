@@ -1,8 +1,10 @@
-import { ApolloError } from 'apollo-server'
+import { ApolloError, AuthenticationError } from 'apollo-server-express'
 import { db } from '../../db/connect'
 import { convertId } from '../../lib/helpers'
 
-export const notes = async () => {
+export const notes = async (parent, args, context) => {
+  if (!context.user) throw new AuthenticationError('you must be logged in')
+
   try {
     let result = await db().collection('notes').find().toArray()
     return result.map(convertId)
