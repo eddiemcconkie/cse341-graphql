@@ -29,10 +29,9 @@ const auth0Config = {
     authRequired: false,
     auth0Logout: true,
     secret: process.env.SECRET,
-    baseURL: 'http://localhost:4000',
+    baseURL: process.env.BASE_URL,
     clientID: process.env.CLIENT_ID,
     issuerBaseURL: process.env.ISSUER_BASE_URL,
-    attemptSilentLogin: false,
 };
 const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();

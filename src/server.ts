@@ -22,10 +22,9 @@ const auth0Config: ConfigParams = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: 'http://localhost:4000',
+  baseURL: process.env.BASE_URL,
   clientID: process.env.CLIENT_ID,
   issuerBaseURL: process.env.ISSUER_BASE_URL,
-  attemptSilentLogin: false,
 }
 
 const startApolloServer = async (typeDefs, resolvers) => {
