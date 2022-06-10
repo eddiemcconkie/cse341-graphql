@@ -14,12 +14,12 @@ const apollo_server_express_1 = require("apollo-server-express");
 const mongodb_1 = require("mongodb");
 const connect_1 = require("../../db/connect");
 const helpers_1 = require("../../lib/helpers");
-const addNote = (_, { title, content }) => __awaiter(void 0, void 0, void 0, function* () {
+const addNote = (parent, { title, content }, context) => __awaiter(void 0, void 0, void 0, function* () {
     const newNote = {
         id: '',
+        uid: context.uid,
         title,
         content,
-        group: null,
         tags: [],
         createdAt: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
@@ -34,12 +34,12 @@ const addNote = (_, { title, content }) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.addNote = addNote;
-const addList = (_, { title }) => __awaiter(void 0, void 0, void 0, function* () {
+const addList = (parent, { title }, context) => __awaiter(void 0, void 0, void 0, function* () {
     const newList = {
         id: '',
+        uid: context.uid,
         title,
         todos: [],
-        group: null,
         tags: [],
     };
     try {
@@ -52,11 +52,11 @@ const addList = (_, { title }) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.addList = addList;
-const addTagToNote = (_, { noteId, tag }) => __awaiter(void 0, void 0, void 0, function* () {
+const addTagToNote = (parent, { noteId, tag }, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield (0, connect_1.db)()
             .collection('notes')
-            .findOneAndUpdate({ _id: new mongodb_1.ObjectId(noteId) }, 
+            .findOneAndUpdate({ _id: new mongodb_1.ObjectId(noteId), uid: context.uid }, 
         /* @ts-ignore*/
         { $push: { tags: tag } }, { returnDocument: 'after' });
         // @ts-ignore
@@ -67,11 +67,11 @@ const addTagToNote = (_, { noteId, tag }) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.addTagToNote = addTagToNote;
-const deleteNote = (_, { noteId }) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteNote = (parent, { noteId }, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield (0, connect_1.db)()
             .collection('notes')
-            .deleteOne({ _id: new mongodb_1.ObjectId(noteId) });
+            .deleteOne({ _id: new mongodb_1.ObjectId(noteId), uid: context.uid });
         return result.deletedCount == 1 ? 'Note deleted' : 'Note not found';
     }
     catch (error) {

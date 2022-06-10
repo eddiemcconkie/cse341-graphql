@@ -3,12 +3,12 @@ import { ObjectId } from 'mongodb'
 import { db } from '../../db/connect'
 import { convertId } from '../../lib/helpers'
 
-export const addNote = async (_, { title, content }) => {
+export const addNote = async (parent, { title, content }, context) => {
   const newNote = {
     id: '',
+    uid: context.uid,
     title,
     content,
-    group: null,
     tags: [],
     createdAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString(),
@@ -22,12 +22,12 @@ export const addNote = async (_, { title, content }) => {
   }
 }
 
-export const addList = async (_, { title }) => {
+export const addList = async (parent, { title }, context) => {
   const newList = {
     id: '',
+    uid: context.uid,
     title,
     todos: [],
-    group: null,
     tags: [],
   }
   try {
@@ -39,12 +39,12 @@ export const addList = async (_, { title }) => {
   }
 }
 
-export const addTagToNote = async (_, { noteId, tag }) => {
+export const addTagToNote = async (parent, { noteId, tag }, context) => {
   try {
     const result = await db()
       .collection('notes')
       .findOneAndUpdate(
-        { _id: new ObjectId(noteId) },
+        { _id: new ObjectId(noteId), uid: context.uid },
         /* @ts-ignore*/
         { $push: { tags: tag } },
         { returnDocument: 'after' }
@@ -56,11 +56,11 @@ export const addTagToNote = async (_, { noteId, tag }) => {
   }
 }
 
-export const deleteNote = async (_, { noteId }) => {
+export const deleteNote = async (parent, { noteId }, context) => {
   try {
     const result = await db()
       .collection('notes')
-      .deleteOne({ _id: new ObjectId(noteId) })
+      .deleteOne({ _id: new ObjectId(noteId), uid: context.uid })
     return result.deletedCount == 1 ? 'Note deleted' : 'Note not found'
   } catch (error) {
     throw new ApolloError('Could not delete note')

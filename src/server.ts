@@ -6,6 +6,7 @@ import {
 } from 'apollo-server-core'
 import express from 'express'
 import { auth, ConfigParams } from 'express-openid-connect'
+import jwt_decode, { JwtPayload } from 'jwt-decode'
 import http from 'http'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -25,6 +26,13 @@ const auth0Config: ConfigParams = {
   baseURL: process.env.BASE_URL,
   clientID: process.env.CLIENT_ID,
   issuerBaseURL: process.env.ISSUER_BASE_URL,
+  clientSecret: process.env.SECRET,
+  authorizationParams: {
+    response_type: 'code',
+    audience: 'https://apollo-server-api/',
+    // audience: '',
+    scope: 'openid',
+  },
 }
 
 const startApolloServer = async (typeDefs, resolvers) => {
@@ -32,64 +40,15 @@ const startApolloServer = async (typeDefs, resolvers) => {
   const httpServer = http.createServer(app)
 
   app.use(cors({ origin: '*' }))
-  app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Z-Key'
-    )
-    res.setHeader('Application-Type', 'application/json')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-    next()
-  })
 
   app.use(auth(auth0Config))
 
-  app.get('/', (req, res) => {
-    res.send(
-      `
-      ${
-        req.oidc.isAuthenticated()
-          ? `<h1>Logged in</h1><a href="/logout">Logout</a>`
-          : `<h1>Logged out</h1><a href="/login">Login</a>`
-      }
-      <a href="/graphql">Apollo Explorer</a>
-      <br />
-      <button>Send data</button>
-      <pre></pre>
+  app.set('view engine', 'ejs')
 
-      <script>
-        const button = document.querySelector('button')
-        const output = document.querySelector('pre')
-        button.addEventListener('click', () => {
-          fetch('/graphql', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              query: \`
-                query Notes {
-                  notes {
-                    id
-                    title
-                    content
-                    createdAt
-                    tags 
-                  }
-                }
-              \`
-            }),
-          })
-            .then(res => res.json())
-            .then(data => {
-              output.innerHTML = '<h2>Output</h2>' + JSON.stringify(data, null, 2)
-            })
-        })
-      </script>
-    `
-    )
+  app.get('/', (req, res) => {
+    res.render('index', {
+      accessToken: req.oidc.accessToken?.access_token ?? '',
+    })
   })
 
   const server = new ApolloServer({
@@ -98,10 +57,15 @@ const startApolloServer = async (typeDefs, resolvers) => {
     csrfPrevention: true,
     introspection: true,
     context: async ({ req }) => {
-      // if (!req.oidc.isAuthenticated())
-      // throw new AuthenticationError('you must be logged in')
+      if (req.oidc.user) return { uid: req.oidc.user.sub }
 
-      return { user: req.oidc.user }
+      try {
+        const token: JwtPayload = jwt_decode(req.headers.authorization)
+        if (token.sub) return { uid: token.sub }
+      } catch (error) {
+        throw new AuthenticationError('you must be logged in')
+      }
+      return { uid: '' }
     },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),

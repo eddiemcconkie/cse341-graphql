@@ -14,10 +14,13 @@ const apollo_server_express_1 = require("apollo-server-express");
 const connect_1 = require("../../db/connect");
 const helpers_1 = require("../../lib/helpers");
 const notes = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!context.user)
-        throw new apollo_server_express_1.AuthenticationError('you must be logged in');
+    // if (!context.user) throw new AuthenticationError('you must be logged in')
+    // if (!context.uid) throw new AuthenticationError('you must be logged in')
     try {
-        let result = yield (0, connect_1.db)().collection('notes').find().toArray();
+        let result = yield (0, connect_1.db)()
+            .collection('notes')
+            .find({ uid: context.uid })
+            .toArray();
         return result.map(helpers_1.convertId);
     }
     catch (error) {
@@ -25,9 +28,12 @@ const notes = (parent, args, context) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.notes = notes;
-const lists = () => __awaiter(void 0, void 0, void 0, function* () {
+const lists = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield (0, connect_1.db)().collection('lists').find().toArray();
+        const result = yield (0, connect_1.db)()
+            .collection('lists')
+            .find({ uid: context.uid })
+            .toArray();
         return result.map(helpers_1.convertId);
     }
     catch (error) {

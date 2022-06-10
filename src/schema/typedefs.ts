@@ -6,11 +6,6 @@ const typeDefs = gql`
     label: String!
   }
 
-  type Group {
-    id: ID!
-    label: String!
-  }
-
   type Todo {
     id: ID!
     label: String!
@@ -20,28 +15,20 @@ const typeDefs = gql`
 
   type List {
     id: ID!
+    uid: String!
     title: String!
     todos: [Todo]
-    group: Group
     tags: [String]
   }
 
   type Note {
     id: ID!
+    uid: String!
     title: String!
     content: String!
-    group: Group
     tags: [String]
     createdAt: String!
     lastUpdated: String!
-  }
-
-  type User {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    notes: [Note]
-    lists: [List]
   }
 
   """
