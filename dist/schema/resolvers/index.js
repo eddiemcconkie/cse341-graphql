@@ -21,6 +21,8 @@ const resolvers = {
         addList: mutation_1.addList,
         renameList: mutation_1.renameList,
         addTagToList: mutation_1.addTagToList,
+        addTodoToList: mutation_1.addTodoToList,
+        setTodo: mutation_1.setTodo,
         deleteList: mutation_1.deleteList,
     },
 };

@@ -10,12 +10,10 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     id: ID!
     label: String!
     completed: Boolean!
-    dueDate: String
   }
 
   type List {
     id: ID!
-    #uid: ID!
     title: String!
     todos: [Todo]
     tags: [String]
@@ -23,10 +21,10 @@ const typeDefs = (0, apollo_server_express_1.gql) `
 
   type Note {
     id: ID!
-    #uid: ID!
     title: String!
     content: String!
     tags: [String]
+    links: [String]
     createdAt: String!
     lastUpdated: String!
   }
@@ -84,6 +82,12 @@ const typeDefs = (0, apollo_server_express_1.gql) `
 
     "Add a tag to the specified list"
     addTagToList(id: ID!, tag: String!): List
+
+    "Add a to-do to the list with the specified id"
+    addTodoToList(id: ID!, label: String!): Todo
+
+    "Mark the specified todo as completed or not"
+    setTodo(id: ID!, completed: Boolean!): Todo
 
     "Delete a list from the database"
     deleteList(id: ID!): DeleteResult

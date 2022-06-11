@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteList = exports.addTagToList = exports.renameList = exports.addList = exports.deleteNote = exports.addTagToNote = exports.updateNote = exports.addNote = void 0;
+exports.deleteList = exports.setTodo = exports.addTodoToList = exports.addTagToList = exports.renameList = exports.addList = exports.deleteNote = exports.addLinkToNote = exports.addTagToNote = exports.updateNote = exports.addNote = void 0;
 const apollo_server_express_1 = require("apollo-server-express");
 const mongodb_1 = require("mongodb");
 const connect_1 = require("../../db/connect");
@@ -33,6 +33,7 @@ const addNote = (parent, { title, content }, context) => __awaiter(void 0, void 
         title,
         content,
         tags: [],
+        links: [],
         createdAt: (0, helpers_1.timestamp)(),
         lastUpdated: (0, helpers_1.timestamp)(),
     };
@@ -65,7 +66,7 @@ const addTagToNote = (parent, { id, tag }, context) => __awaiter(void 0, void 0,
             .collection('notes')
             .findOneAndUpdate({ _id: new mongodb_1.ObjectId(id), uid: context.uid }, 
         /* @ts-ignore*/
-        { $push: { tags: tag }, $set: { lastUpdated: (0, helpers_1.timestamp)() } }, { returnDocument: 'after' });
+        { $addToSet: { tags: tag }, $set: { lastUpdated: (0, helpers_1.timestamp)() } }, { returnDocument: 'after' });
         // @ts-ignore
         return (0, helpers_1.convertId)(result.value);
     }
@@ -74,6 +75,21 @@ const addTagToNote = (parent, { id, tag }, context) => __awaiter(void 0, void 0,
     }
 });
 exports.addTagToNote = addTagToNote;
+const addLinkToNote = (parent, { id, link }, context) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield (0, connect_1.db)()
+            .collection('notes')
+            .findOneAndUpdate({ _id: new mongodb_1.ObjectId(id), uid: context.uid }, 
+        /* @ts-ignore*/
+        { $addToSet: { links: link }, $set: { lastUpdated: (0, helpers_1.timestamp)() } }, { returnDocument: 'after' });
+        // @ts-ignore
+        return (0, helpers_1.convertId)(result.value);
+    }
+    catch (error) {
+        throw new apollo_server_express_1.ApolloError('Could not add link to note');
+    }
+});
+exports.addLinkToNote = addLinkToNote;
 const deleteNote = (parent, { id }, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield (0, connect_1.db)()
@@ -94,6 +110,8 @@ const addList = (parent, { title }, context) => __awaiter(void 0, void 0, void 0
         title,
         todos: [],
         tags: [],
+        createdAt: (0, helpers_1.timestamp)(),
+        lastUpdated: (0, helpers_1.timestamp)(),
     };
     try {
         const result = yield (0, connect_1.db)().collection('lists').insertOne(newList);
@@ -123,7 +141,7 @@ const addTagToList = (parent, { id, tag }, context) => __awaiter(void 0, void 0,
             .collection('lists')
             .findOneAndUpdate({ _id: new mongodb_1.ObjectId(id), uid: context.uid }, 
         /* @ts-ignore*/
-        { $push: { tags: tag }, $set: { lastUpdated: (0, helpers_1.timestamp)() } }, { returnDocument: 'after' });
+        { $addToSet: { tags: tag }, $set: { lastUpdated: (0, helpers_1.timestamp)() } }, { returnDocument: 'after' });
         // @ts-ignore
         return (0, helpers_1.convertId)(result.value);
     }
@@ -132,6 +150,48 @@ const addTagToList = (parent, { id, tag }, context) => __awaiter(void 0, void 0,
     }
 });
 exports.addTagToList = addTagToList;
+const addTodoToList = (parent, { id, label }, context) => __awaiter(void 0, void 0, void 0, function* () {
+    const newTodo = {
+        id: new mongodb_1.ObjectId().toString(),
+        label,
+        completed: false,
+    };
+    try {
+        yield (0, connect_1.db)()
+            .collection('lists')
+            .findOneAndUpdate({
+            _id: new mongodb_1.ObjectId(id),
+            uid: context.uid,
+        }, 
+        // @ts-ignore
+        { $push: { todos: newTodo }, $set: { lastUpdated: (0, helpers_1.timestamp)() } });
+        // return convertId(newTodo)
+        return newTodo;
+    }
+    catch (error) {
+        throw new apollo_server_express_1.ApolloError('Could not add to-do to list');
+    }
+});
+exports.addTodoToList = addTodoToList;
+const setTodo = (parent, { id, completed }, context) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryObject = { uid: context.uid, todos: { $elemMatch: { id } } };
+    try {
+        const result = yield (0, connect_1.db)().collection('lists').findOne(queryObject);
+        const index = result.todos.findIndex((todo) => todo.id === id);
+        // If index is -1 an error will be thrown
+        result.todos[index].completed = completed;
+        yield (0, connect_1.db)()
+            .collection('lists')
+            .findOneAndUpdate(queryObject, {
+            $set: { todos: result.todos, lastUpdated: (0, helpers_1.timestamp)() },
+        });
+        return result.todos[index];
+    }
+    catch (error) {
+        throw new apollo_server_express_1.ApolloError('Could not update to-do');
+    }
+});
+exports.setTodo = setTodo;
 const deleteList = (parent, { id }, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield (0, connect_1.db)()

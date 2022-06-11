@@ -7,6 +7,8 @@ import {
   addList,
   renameList,
   addTagToList,
+  addTodoToList,
+  setTodo,
   deleteList,
 } from './mutation'
 
@@ -29,6 +31,8 @@ const resolvers = {
     addList,
     renameList,
     addTagToList,
+    addTodoToList,
+    setTodo,
     deleteList,
   },
 }
