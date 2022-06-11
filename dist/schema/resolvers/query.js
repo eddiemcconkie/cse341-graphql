@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lists = exports.notes = void 0;
+exports.list = exports.allLists = exports.note = exports.allNotes = void 0;
 const apollo_server_express_1 = require("apollo-server-express");
+const mongodb_1 = require("mongodb");
 const connect_1 = require("../../db/connect");
 const helpers_1 = require("../../lib/helpers");
-const notes = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
-    // if (!context.user) throw new AuthenticationError('you must be logged in')
-    // if (!context.uid) throw new AuthenticationError('you must be logged in')
+/***** NOTES *****/
+const allNotes = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let result = yield (0, connect_1.db)()
             .collection('notes')
@@ -27,8 +27,21 @@ const notes = (parent, args, context) => __awaiter(void 0, void 0, void 0, funct
         throw new apollo_server_express_1.ApolloError('Could not retrieve notes from database');
     }
 });
-exports.notes = notes;
-const lists = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
+exports.allNotes = allNotes;
+const note = (parent, { id }, context) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield (0, connect_1.db)()
+            .collection('notes')
+            .findOne({ _id: new mongodb_1.ObjectId(id), uid: context.uid });
+        return (0, helpers_1.convertId)(result);
+    }
+    catch (error) {
+        throw new apollo_server_express_1.ApolloError('Could not retrieve note from database');
+    }
+});
+exports.note = note;
+/***** LISTS *****/
+const allLists = (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield (0, connect_1.db)()
             .collection('lists')
@@ -40,5 +53,17 @@ const lists = (parent, args, context) => __awaiter(void 0, void 0, void 0, funct
         throw new apollo_server_express_1.ApolloError('Could not retrieve lists from database');
     }
 });
-exports.lists = lists;
+exports.allLists = allLists;
+const list = (parent, { id }, context) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield (0, connect_1.db)()
+            .collection('lists')
+            .findOne({ _id: new mongodb_1.ObjectId(id), uid: context.uid });
+        return (0, helpers_1.convertId)(result);
+    }
+    catch (error) {
+        throw new apollo_server_express_1.ApolloError('Could not retrieve list from database');
+    }
+});
+exports.list = list;
 //# sourceMappingURL=query.js.map

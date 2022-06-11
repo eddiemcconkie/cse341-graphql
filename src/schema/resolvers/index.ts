@@ -1,16 +1,35 @@
-import { lists, notes } from './query'
-import { addNote, addList, addTagToNote, deleteNote } from './mutation'
+import { allNotes, note, allLists, list } from './query'
+import {
+  addNote,
+  updateNote,
+  addTagToNote,
+  deleteNote,
+  addList,
+  renameList,
+  addTagToList,
+  deleteList,
+} from './mutation'
 
 const resolvers = {
   Query: {
-    notes,
-    lists,
+    // Notes
+    allNotes,
+    note,
+    // Lists
+    allLists,
+    list,
   },
   Mutation: {
+    // Notes
     addNote,
-    addList,
+    updateNote,
     addTagToNote,
     deleteNote,
+    // Lists
+    addList,
+    renameList,
+    addTagToList,
+    deleteList,
   },
 }
 

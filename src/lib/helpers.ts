@@ -5,3 +5,5 @@ export const convertId = (data: WithId<Document>) => ({
   ...data,
   id: data._id.toString(),
 })
+
+export const timestamp = () => new Date().toISOString()

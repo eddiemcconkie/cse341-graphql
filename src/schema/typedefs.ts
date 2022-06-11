@@ -1,9 +1,8 @@
 import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
-  type Tag {
-    id: ID!
-    label: String!
+  type DeleteResult {
+    deleted: Boolean
   }
 
   type Todo {
@@ -15,7 +14,7 @@ const typeDefs = gql`
 
   type List {
     id: ID!
-    uid: String!
+    #uid: ID!
     title: String!
     todos: [Todo]
     tags: [String]
@@ -23,7 +22,7 @@ const typeDefs = gql`
 
   type Note {
     id: ID!
-    uid: String!
+    #uid: ID!
     title: String!
     content: String!
     tags: [String]
@@ -37,11 +36,21 @@ const typeDefs = gql`
   Select one of the fields below to create a Query
   """
   type Query {
+    ### NOTES ###
+
     "Retrieve all notes from the database"
-    notes: [Note]
+    allNotes: [Note]
+
+    "Retrieve a single note by id"
+    note(id: ID!): Note
+
+    ### LISTS ###
 
     "Retrieve all to-do lists from the database"
-    lists: [List]
+    allLists: [List]
+
+    "Retrieve a single list by id"
+    list(id: ID!): List
   }
 
   """
@@ -50,17 +59,33 @@ const typeDefs = gql`
   Select a Mutation operation and provide the required arguments in the Variables section
   """
   type Mutation {
+    ### NOTES ###
+
     "Add a new note to the database"
     addNote(title: String!, content: String!): Note
+
+    "Update the title or content of a note"
+    updateNote(id: ID!, title: String, content: String): Note
+
+    "Add a tag to the specified note"
+    addTagToNote(id: ID!, tag: String!): Note
+
+    "Delete a note from the database"
+    deleteNote(id: ID!): DeleteResult
+
+    ### LISTS ###
 
     "Add a new to-do list to the database"
     addList(title: String!): List
 
-    "Add a tag to the specified note"
-    addTagToNote(noteId: String!, tag: String!): List
+    "Rename the specified list"
+    renameList(id: ID!, title: String!): List
 
-    "Delete a note from the database"
-    deleteNote(noteId: String!): String
+    "Add a tag to the specified list"
+    addTagToList(id: ID!, tag: String!): List
+
+    "Delete a list from the database"
+    deleteList(id: ID!): DeleteResult
   }
 `
 

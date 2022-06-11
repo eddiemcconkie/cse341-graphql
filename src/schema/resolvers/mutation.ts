@@ -1,8 +1,9 @@
 import { ApolloError } from 'apollo-server-express'
 import { ObjectId } from 'mongodb'
 import { db } from '../../db/connect'
-import { convertId } from '../../lib/helpers'
+import { convertId, timestamp } from '../../lib/helpers'
 
+/***** NOTES *****/
 export const addNote = async (parent, { title, content }, context) => {
   const newNote = {
     id: '',
@@ -10,8 +11,8 @@ export const addNote = async (parent, { title, content }, context) => {
     title,
     content,
     tags: [],
-    createdAt: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
+    createdAt: timestamp(),
+    lastUpdated: timestamp(),
   }
   try {
     const result = await db().collection('notes').insertOne(newNote)
@@ -22,6 +23,50 @@ export const addNote = async (parent, { title, content }, context) => {
   }
 }
 
+export const updateNote = async (parent, { id, ...args }, context) => {
+  try {
+    const result = await db()
+      .collection('notes')
+      .findOneAndUpdate(
+        { _id: new ObjectId(id), uid: context.uid },
+        { $set: { ...args, lastUpdated: timestamp() } },
+        { returnDocument: 'after' }
+      )
+    return convertId(result.value)
+  } catch (error) {
+    throw new ApolloError('Could not modify note')
+  }
+}
+
+export const addTagToNote = async (parent, { id, tag }, context) => {
+  try {
+    const result = await db()
+      .collection('notes')
+      .findOneAndUpdate(
+        { _id: new ObjectId(id), uid: context.uid },
+        /* @ts-ignore*/
+        { $push: { tags: tag }, $set: { lastUpdated: timestamp() } },
+        { returnDocument: 'after' }
+      )
+    // @ts-ignore
+    return convertId(result.value)
+  } catch (error) {
+    throw new ApolloError('Could not add tag to note')
+  }
+}
+
+export const deleteNote = async (parent, { id }, context) => {
+  try {
+    const result = await db()
+      .collection('notes')
+      .deleteOne({ _id: new ObjectId(id), uid: context.uid })
+    return { deleted: result.deletedCount == 1 }
+  } catch (error) {
+    throw new ApolloError('Could not delete note')
+  }
+}
+
+/***** LISTS *****/
 export const addList = async (parent, { title }, context) => {
   const newList = {
     id: '',
@@ -39,14 +84,29 @@ export const addList = async (parent, { title }, context) => {
   }
 }
 
-export const addTagToNote = async (parent, { noteId, tag }, context) => {
+export const renameList = async (parent, { id, title }, context) => {
   try {
     const result = await db()
-      .collection('notes')
+      .collection('lists')
       .findOneAndUpdate(
-        { _id: new ObjectId(noteId), uid: context.uid },
+        { _id: new ObjectId(id), uid: context.uid },
+        { $set: { title, lastUpdated: timestamp() } },
+        { returnDocument: 'after' }
+      )
+    return convertId(result.value)
+  } catch (error) {
+    throw new ApolloError('Could not modify note')
+  }
+}
+
+export const addTagToList = async (parent, { id, tag }, context) => {
+  try {
+    const result = await db()
+      .collection('lists')
+      .findOneAndUpdate(
+        { _id: new ObjectId(id), uid: context.uid },
         /* @ts-ignore*/
-        { $push: { tags: tag } },
+        { $push: { tags: tag }, $set: { lastUpdated: timestamp() } },
         { returnDocument: 'after' }
       )
     // @ts-ignore
@@ -56,13 +116,13 @@ export const addTagToNote = async (parent, { noteId, tag }, context) => {
   }
 }
 
-export const deleteNote = async (parent, { noteId }, context) => {
+export const deleteList = async (parent, { id }, context) => {
   try {
     const result = await db()
-      .collection('notes')
-      .deleteOne({ _id: new ObjectId(noteId), uid: context.uid })
-    return result.deletedCount == 1 ? 'Note deleted' : 'Note not found'
+      .collection('lists')
+      .deleteOne({ _id: new ObjectId(id), uid: context.uid })
+    return { deleted: result.deletedCount == 1 }
   } catch (error) {
-    throw new ApolloError('Could not delete note')
+    throw new ApolloError('Could not delete list')
   }
 }
