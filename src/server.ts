@@ -30,7 +30,6 @@ const auth0Config: ConfigParams = {
   authorizationParams: {
     response_type: 'code',
     audience: 'https://apollo-server-api/',
-    // audience: '',
     scope: 'openid',
   },
 }
@@ -39,17 +38,9 @@ const startApolloServer = async (typeDefs, resolvers) => {
   const app = express()
   const httpServer = http.createServer(app)
 
-  app.use(cors({ origin: '*' }))
+  app.use(cors())
 
   app.use(auth(auth0Config))
-
-  app.set('view engine', 'ejs')
-
-  app.get('/', (req, res) => {
-    res.render('index', {
-      accessToken: req.oidc.accessToken?.access_token ?? '',
-    })
-  })
 
   const server = new ApolloServer({
     typeDefs,
@@ -84,6 +75,14 @@ const startApolloServer = async (typeDefs, resolvers) => {
   server.applyMiddleware({
     app,
     path: '/graphql',
+  })
+
+  app.set('view engine', 'ejs')
+
+  app.get('/', (req, res) => {
+    res.render('index', {
+      accessToken: req.oidc.accessToken?.access_token ?? '',
+    })
   })
 
   await new Promise<void>((resolve) => httpServer.listen({ port }, resolve))

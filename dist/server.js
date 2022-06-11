@@ -37,22 +37,14 @@ const auth0Config = {
     authorizationParams: {
         response_type: 'code',
         audience: 'https://apollo-server-api/',
-        // audience: '',
         scope: 'openid',
     },
 };
 const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
     const httpServer = http_1.default.createServer(app);
-    app.use((0, cors_1.default)({ origin: '*' }));
+    app.use((0, cors_1.default)());
     app.use((0, express_openid_connect_1.auth)(auth0Config));
-    app.set('view engine', 'ejs');
-    app.get('/', (req, res) => {
-        var _a, _b;
-        res.render('index', {
-            accessToken: (_b = (_a = req.oidc.accessToken) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : '',
-        });
-    });
     const server = new apollo_server_express_1.ApolloServer({
         typeDefs,
         resolvers,
@@ -87,6 +79,13 @@ const startApolloServer = (typeDefs, resolvers) => __awaiter(void 0, void 0, voi
     server.applyMiddleware({
         app,
         path: '/graphql',
+    });
+    app.set('view engine', 'ejs');
+    app.get('/', (req, res) => {
+        var _a, _b;
+        res.render('index', {
+            accessToken: (_b = (_a = req.oidc.accessToken) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : '',
+        });
     });
     yield new Promise((resolve) => httpServer.listen({ port }, resolve));
     console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
