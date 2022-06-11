@@ -42,6 +42,14 @@ const startApolloServer = async (typeDefs, resolvers) => {
 
   app.use(auth(auth0Config))
 
+  app.set('view engine', 'ejs')
+
+  app.get('/home', (req, res) => {
+    res.render('index', {
+      accessToken: req.oidc.accessToken?.access_token ?? '',
+    })
+  })
+
   const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -74,15 +82,7 @@ const startApolloServer = async (typeDefs, resolvers) => {
   await server.start()
   server.applyMiddleware({
     app,
-    path: '/graphql',
-  })
-
-  app.set('view engine', 'ejs')
-
-  app.get('/', (req, res) => {
-    res.render('index', {
-      accessToken: req.oidc.accessToken?.access_token ?? '',
-    })
+    path: '/',
   })
 
   await new Promise<void>((resolve) => httpServer.listen({ port }, resolve))
