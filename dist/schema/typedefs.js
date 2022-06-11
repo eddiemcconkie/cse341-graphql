@@ -71,6 +71,9 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     "Add a tag to the specified note"
     addTagToNote(id: ID!, tag: String!): Note
 
+    "Add a link to the specified note"
+    addLinkToNote(id: ID!, tag: String!): Note
+
     "Delete a note from the database"
     deleteNote(id: ID!): DeleteResult
 
