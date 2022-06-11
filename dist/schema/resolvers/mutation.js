@@ -131,7 +131,7 @@ const renameList = (parent, { id, title }, context) => __awaiter(void 0, void 0,
         return (0, helpers_1.convertId)(result.value);
     }
     catch (error) {
-        throw new apollo_server_express_1.ApolloError('Could not modify note');
+        throw new apollo_server_express_1.ApolloError('Could not rename list');
     }
 });
 exports.renameList = renameList;
@@ -146,7 +146,7 @@ const addTagToList = (parent, { id, tag }, context) => __awaiter(void 0, void 0,
         return (0, helpers_1.convertId)(result.value);
     }
     catch (error) {
-        throw new apollo_server_express_1.ApolloError('Could not add tag to note');
+        throw new apollo_server_express_1.ApolloError('Could not add tag to list');
     }
 });
 exports.addTagToList = addTagToList;

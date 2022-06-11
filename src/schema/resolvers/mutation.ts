@@ -115,7 +115,7 @@ export const renameList = async (parent, { id, title }, context) => {
       )
     return convertId(result.value)
   } catch (error) {
-    throw new ApolloError('Could not modify note')
+    throw new ApolloError('Could not rename list')
   }
 }
 
@@ -132,7 +132,7 @@ export const addTagToList = async (parent, { id, tag }, context) => {
     // @ts-ignore
     return convertId(result.value)
   } catch (error) {
-    throw new ApolloError('Could not add tag to note')
+    throw new ApolloError('Could not add tag to list')
   }
 }
 
