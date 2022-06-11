@@ -3,6 +3,7 @@ import {
   addNote,
   updateNote,
   addTagToNote,
+  addLinkToNote,
   deleteNote,
   addList,
   renameList,
@@ -26,6 +27,7 @@ const resolvers = {
     addNote,
     updateNote,
     addTagToNote,
+    addLinkToNote,
     deleteNote,
     // Lists
     addList,

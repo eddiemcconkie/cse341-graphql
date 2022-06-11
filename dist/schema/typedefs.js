@@ -17,6 +17,8 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     title: String!
     todos: [Todo]
     tags: [String]
+    createdAt: String!
+    lastUpdated: String!
   }
 
   type Note {

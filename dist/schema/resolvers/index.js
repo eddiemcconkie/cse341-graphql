@@ -16,6 +16,7 @@ const resolvers = {
         addNote: mutation_1.addNote,
         updateNote: mutation_1.updateNote,
         addTagToNote: mutation_1.addTagToNote,
+        addLinkToNote: mutation_1.addLinkToNote,
         deleteNote: mutation_1.deleteNote,
         // Lists
         addList: mutation_1.addList,

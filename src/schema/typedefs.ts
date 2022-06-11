@@ -16,6 +16,8 @@ const typeDefs = gql`
     title: String!
     todos: [Todo]
     tags: [String]
+    createdAt: String!
+    lastUpdated: String!
   }
 
   type Note {
